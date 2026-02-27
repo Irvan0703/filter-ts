@@ -3,9 +3,10 @@ import {
   useSearchParams,
   Form,
   useNavigate,
- type LoaderFunctionArgs,
+  type LoaderFunctionArgs,
+  useSubmit,
 } from "react-router-dom";
-import { type RegionResponse } from "./types/region";
+import type { RegionResponse } from "./types/region";
 
 /**
  * Loader (Data Mode)
@@ -19,44 +20,48 @@ export async function loader(_: LoaderFunctionArgs) {
 export default function FilterPage() {
   const { provinces, regencies, districts } =
     useLoaderData() as RegionResponse;
+    const submit = useSubmit();
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const selectedProvince = searchParams.get("province") ?? "";
-  const selectedRegency = searchParams.get("regency") ?? "";
-  const selectedDistrict = searchParams.get("district") ?? "";
+  const selectedProvince = Number(searchParams.get("province") || 0);
+  const selectedRegency = Number(searchParams.get("regency") || 0);
+  const selectedDistrict = Number(searchParams.get("district") || 0);
 
   const filteredRegencies = regencies.filter(
-    (r) => r.province_id === selectedProvince
-  );
+  (r) => r.province_id === selectedProvince
+);
 
   const filteredDistricts = districts.filter(
-    (d) => d.regency_id === selectedRegency
-  );
+  (d) => d.regency_id === selectedRegency
+);
 
   const getProvinceName = () =>
-    provinces.find((p) => p.id === selectedProvince)?.name;
+  provinces.find((p) => p.id === selectedProvince)?.name;
 
-  const getRegencyName = () =>
-    regencies.find((r) => r.id === selectedRegency)?.name;
+const getRegencyName = () =>
+  regencies.find((r) => r.id === selectedRegency)?.name;
 
-  const getDistrictName = () =>
-    districts.find((d) => d.id === selectedDistrict)?.name;
+const getDistrictName = () =>
+  districts.find((d) => d.id === selectedDistrict)?.name;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       <aside className="w-80 bg-white p-6 border-r">
-        <h2 className="text-lg font-semibold mb-6">
-          Filter Wilayah
-        </h2>
+        <h1 className="text-lg font-semibold flex items-center gap-2 mb-10">
+          Frontend Assessment
+        </h1>
 
         <Form method="get" className="space-y-4">
           {/* Province */}
           <select
             name="province"
-            defaultValue={selectedProvince}
+            value={selectedProvince || ""}
+            onChange={(e) => {
+              submit(e.currentTarget.form);
+            }}
             className="w-full border p-2 rounded"
           >
             <option value="">Pilih Provinsi</option>
@@ -70,8 +75,11 @@ export default function FilterPage() {
           {/* Regency */}
           <select
             name="regency"
-            defaultValue={selectedRegency}
+            value={selectedRegency || ""}
             disabled={!selectedProvince}
+            onChange={(e) => {
+              submit(e.currentTarget.form);
+            }}
             className="w-full border p-2 rounded"
           >
             <option value="">Pilih Kota/Kabupaten</option>
@@ -85,8 +93,11 @@ export default function FilterPage() {
           {/* District */}
           <select
             name="district"
-            defaultValue={selectedDistrict}
+            value={selectedDistrict || ""}
             disabled={!selectedRegency}
+            onChange={(e) => {
+              submit(e.currentTarget.form);
+            }}
             className="w-full border p-2 rounded"
           >
             <option value="">Pilih Kecamatan</option>
@@ -98,12 +109,6 @@ export default function FilterPage() {
           </select>
 
           <div className="flex gap-2">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-            >
-              Apply
-            </button>
 
             <button
               type="button"
@@ -120,13 +125,13 @@ export default function FilterPage() {
       <main className="flex-1 p-10">
         <nav className="breadcrumb text-sm text-gray-500 mb-8">
           Indonesia
-          {selectedProvince && ` > ${getProvinceName()}`}
-          {selectedRegency && ` > ${getRegencyName()}`}
-          {selectedDistrict && ` > ${getDistrictName()}`}
+          {(selectedProvince  || "") && ` > ${getProvinceName()}`}
+          {(selectedRegency  || "") && ` > ${getRegencyName()}`}
+          {(selectedDistrict  || "") && ` > ${getDistrictName()}`}
         </nav>
 
         <div className="text-center space-y-6">
-          {selectedProvince && (
+          {(selectedProvince  || "") && (
             <>
               <p className="text-gray-400 uppercase text-sm">
                 Provinsi
@@ -137,8 +142,9 @@ export default function FilterPage() {
             </>
           )}
 
-          {selectedRegency && (
+          {(selectedRegency  || "") && (
             <>
+              <div className="text-gray-300 text-xl">↓</div>
               <p className="text-gray-400 uppercase text-sm">
                 Kota / Kabupaten
               </p>
@@ -148,8 +154,9 @@ export default function FilterPage() {
             </>
           )}
 
-          {selectedDistrict && (
+          {(selectedDistrict  || "") && (
             <>
+              <div className="text-gray-300 text-xl">↓</div>
               <p className="text-gray-400 uppercase text-sm">
                 Kecamatan
               </p>
