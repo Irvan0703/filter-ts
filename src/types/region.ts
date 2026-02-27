@@ -1,17 +1,17 @@
 export interface Province {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Regency {
-  id: string;
-  province_id: string;
+  id: number;
+  province_id: number;
   name: string;
 }
 
 export interface District {
-  id: string;
-  regency_id: string;
+  id: number;
+  regency_id: number;
   name: string;
 }
 
