@@ -7,7 +7,6 @@ import {
   useSubmit,
 } from "react-router-dom";
 import type { RegionResponse } from "../types/region";
-import { Building2 } from "lucide-react";
 
 /**
  * Loader (Data Mode)
@@ -26,33 +25,32 @@ export default function FilterPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const selectedProvince = searchParams.get("province") ?? "";
-  const selectedRegency = searchParams.get("regency") ?? "";
-  const selectedDistrict = searchParams.get("district") ?? "";
+  const selectedProvince = Number(searchParams.get("province") || 0);
+  const selectedRegency = Number(searchParams.get("regency") || 0);
+  const selectedDistrict = Number(searchParams.get("district") || 0);
 
   const filteredRegencies = regencies.filter(
-  (r) => r.province_id === Number(selectedProvince)
+  (r) => r.province_id === selectedProvince
 );
 
   const filteredDistricts = districts.filter(
-  (d) => d.regency_id === Number(selectedRegency)
+  (d) => d.regency_id === selectedRegency
 );
 
   const getProvinceName = () =>
-  provinces.find((p) => p.id === Number(selectedProvince))?.name;
+  provinces.find((p) => p.id === selectedProvince)?.name;
 
 const getRegencyName = () =>
-  regencies.find((r) => r.id === Number(selectedRegency))?.name;
+  regencies.find((r) => r.id === selectedRegency)?.name;
 
 const getDistrictName = () =>
-  districts.find((d) => d.id === Number(selectedDistrict))?.name;
+  districts.find((d) => d.id === selectedDistrict)?.name;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       <aside className="w-80 bg-white p-6 border-r">
         <h1 className="text-lg font-semibold flex items-center gap-2 mb-10">
-          <Building2 size={20} className="text-blue-600" />
           Frontend Assessment
         </h1>
 
@@ -60,7 +58,7 @@ const getDistrictName = () =>
           {/* Province */}
           <select
             name="province"
-            value={selectedProvince}
+            value={selectedProvince || ""}
             onChange={(e) => {
               submit(e.currentTarget.form);
             }}
@@ -77,7 +75,7 @@ const getDistrictName = () =>
           {/* Regency */}
           <select
             name="regency"
-            value={selectedRegency}
+            value={selectedRegency || ""}
             disabled={!selectedProvince}
             onChange={(e) => {
               submit(e.currentTarget.form);
@@ -95,7 +93,7 @@ const getDistrictName = () =>
           {/* District */}
           <select
             name="district"
-            value={selectedDistrict}
+            value={selectedDistrict || ""}
             disabled={!selectedRegency}
             onChange={(e) => {
               submit(e.currentTarget.form);
@@ -127,13 +125,13 @@ const getDistrictName = () =>
       <main className="flex-1 p-10">
         <nav className="breadcrumb text-sm text-gray-500 mb-8">
           Indonesia
-          {selectedProvince && ` > ${getProvinceName()}`}
-          {selectedRegency && ` > ${getRegencyName()}`}
-          {selectedDistrict && ` > ${getDistrictName()}`}
+          {(selectedProvince  || "") && ` > ${getProvinceName()}`}
+          {(selectedRegency  || "") && ` > ${getRegencyName()}`}
+          {(selectedDistrict  || "") && ` > ${getDistrictName()}`}
         </nav>
 
         <div className="text-center space-y-6">
-          {selectedProvince && (
+          {(selectedProvince  || "") && (
             <>
               <p className="text-gray-400 uppercase text-sm">
                 Provinsi
@@ -144,7 +142,7 @@ const getDistrictName = () =>
             </>
           )}
 
-          {selectedRegency && (
+          {(selectedRegency  || "") && (
             <>
               <div className="text-gray-300 text-xl">↓</div>
               <p className="text-gray-400 uppercase text-sm">
@@ -156,7 +154,7 @@ const getDistrictName = () =>
             </>
           )}
 
-          {selectedDistrict && (
+          {(selectedDistrict  || "") && (
             <>
               <div className="text-gray-300 text-xl">↓</div>
               <p className="text-gray-400 uppercase text-sm">
